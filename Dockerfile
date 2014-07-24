@@ -20,8 +20,8 @@ RUN apt-get install mongodb-org -y
 # Install elasticSearch
 #RUN apt-get install elasticsearch -y
 
-# Elastic search - add archive
-ADD resources/elasticsearch-1.0.3.zip .
+# Elastic search - download archive
+RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.3.zip
 # Elastic search - installation
 RUN unzip elasticsearch-1.0.3.zip -d /opt/
   
@@ -33,9 +33,9 @@ ADD resources/mongodb.conf /data/db/mongodb.conf
 RUN mkdir -p /var/log/supervisor
 ADD resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Elastic search - plugin river
-ADD resources/elasticsearch-river-mongodb-master.zip .
+#ADD resources/elasticsearch-river-mongodb-master.zip .
 # plugin river for mongodb
-RUN /opt/elasticsearch-1.0.3/bin/plugin -u file://elasticsearch-river-mongodb-master.zip
+RUN /opt/elasticsearch-1.0.3/bin/plugin --install com.github.richardwilly98.elasticsearch/elasticsearch-river-mongodb/2.0.0
 # Expose mongodb default port 27017 from the container
 EXPOSE 27017
 # Expose Elastic search ports - HTTP
