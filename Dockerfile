@@ -12,14 +12,6 @@ RUN apt-get update
 RUN apt-get install -y -q wget dpkg unzip curl supervisor openjdk-7-jre
 RUN apt-get install mongodb-org -y 
 
-# TODO use the latest version of elasticSearch. 
-#Import ElasticSearch public key and append to sources list
-#RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.2.2.deb
-#RUN dpkg -i elasticsearch-1.2.2.deb
-
-# Install elasticSearch
-#RUN apt-get install elasticsearch -y
-
 # Elastic search - download archive
 RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.3.zip
 # Elastic search - installation
@@ -28,14 +20,17 @@ RUN unzip elasticsearch-1.0.3.zip -d /opt/
 # Create the MongoDB data directory
 RUN mkdir -p /data/db
 # Add mongoDB default configuration
-ADD resources/mongodb.conf /data/db/mongodb.conf
+ADD resources/mongodb.conf /data/mongodb.conf
 # Supervisor configuration
 RUN mkdir -p /var/log/supervisor
 ADD resources/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-# Elastic search - plugin river
-#ADD resources/elasticsearch-river-mongodb-master.zip .
+# Elastic search - Global configuration
+ADD resources/elasticsearch.yml /opt/elasticsearch-1.0.3/config/elasticsearch.yml
 # plugin river for mongodb
 RUN /opt/elasticsearch-1.0.3/bin/plugin --install com.github.richardwilly98.elasticsearch/elasticsearch-river-mongodb/2.0.0
+
+ADD resources/mongo_rs_initiate.sh /opt/mongo_rs_initiate.sh
+RUN chmod +x /opt/mongo_rs_initiate.sh
 # Expose mongodb default port 27017 from the container
 EXPOSE 27017
 # Expose Elastic search ports - HTTP
